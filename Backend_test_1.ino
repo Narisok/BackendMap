@@ -10,6 +10,22 @@
 #endif
 
 
+
+#include <FastLED.h>
+
+
+#define LED_PIN     15
+#define NUM_LEDS    119  // all count
+#define BRIGHTNESS  10
+#define LED_TYPE    WS2811
+#define COLOR_ORDER RGB
+CRGB leds[NUM_LEDS];
+
+
+#define UPDATES_PER_SECOND 100
+
+
+
 const char *ssid = STASSID;
 const char *passPhrase = STAPSK;
 
@@ -64,66 +80,48 @@ void setup() {
     nii::Router::builder()->path("/zones/create")->call(&ZoneController::create);
     nii::Router::builder()->path("/zones/edit/$")->call(&ZoneController::edit);
 
-
-    nii::Router::builder()->path("/dir/list")->call( [] () -> nii::Response * {
-
-      listDir("/");
- auto res = new nii::JsonResponse();
-  res->json()["data"] = "list";
-      return  res;
-    });
-
-
   });
 
-// TRACE("LIST FILE BEFORE");
-// writeFile("/file.txt", "message");
-// TRACE("LIST FILE AFTER");
-// listDir("/");
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  //  FastLED.setCorrection( TypicalLEDStrip );
+  FastLED.setBrightness(  BRIGHTNESS );
+
 }
 
 
-void listDir(const char *dirname) {
-  Serial.printf("Listing directory: %s\n", dirname);
 
-  Dir root = LittleFS.openDir(dirname);
-
-  while (root.next()) {
-    File file = root.openFile("r");
-    Serial.print("  FILE: ");
-    Serial.print(root.fileName());
-    Serial.print("  SIZE: ");
-    Serial.print(file.size());
-    time_t cr = file.getCreationTime();
-    time_t lw = file.getLastWrite();
-    file.close();
-    struct tm *tmstruct = localtime(&cr);
-    Serial.printf("    CREATION: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
-    tmstruct = localtime(&lw);
-    Serial.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
-  }
-}
-
-void writeFile(const char *path, const char *message) {
-  Serial.printf("Writing file: %s\n", path);
-
-  File file = LittleFS.open(path, "w");
-  if (!file) {
-    Serial.println("Failed to open file for writing");
-    return;
-  }
-  if (file.print(message)) {
-    Serial.println("File written");
-  } else {
-    Serial.println("Write failed");
-  }
-  delay(2000);  // Make sure the CREATE and LASTWRITE times are different
-  file.close();
-}
 
 void loop() {
   nii::backend::update();
 
+  for (auto &zone : DB<Zone>::get()) {
+
+    for (int i = zone.from; i < zone.to; i++) {
+      switch (zone.mode) {
+        // case 0:
+        //   res->addData("None");
+        //   break;
+        // case 1:
+        //   res->addData("Use global");
+        //   break;
+        case 2:
+          leds[i] = CRGB::Red;
+          break;
+        // case 3:
+        //   res->addData("DANGER");
+        //   break;
+        case 4:
+          leds[i] = CRGB::Green;
+          break;
+        default:
+          leds[i] = CRGB::White;
+          break;
+      }
+
+    }
+
+  }
+   FastLED.show(); 
   // put your main code here, to run repeatedly:
 
 }
