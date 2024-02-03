@@ -3,26 +3,12 @@
 #include "MainController.hpp"
 #include "ZoneController.hpp"
 #include "ApiZoneController.hpp"
+#include "ZoneMode.hpp"
 
 #ifndef STASSID
 #define STASSID "GigaProg"//"MikroTik-2GHz"
 #define STAPSK "1q3e5t7u"//"wantGIGABIT"
 #endif
-
-
-
-#include <FastLED.h>
-
-
-#define LED_PIN     15
-#define NUM_LEDS    119  // all count
-#define BRIGHTNESS  10
-#define LED_TYPE    WS2811
-#define COLOR_ORDER RGB
-CRGB leds[NUM_LEDS];
-
-
-#define UPDATES_PER_SECOND 100
 
 
 
@@ -83,9 +69,7 @@ void setup() {
 
   });
 
-  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
-  //  FastLED.setCorrection( TypicalLEDStrip );
-  FastLED.setBrightness(  BRIGHTNESS );
+  ZoneMode::begin();
 
 }
 
@@ -95,34 +79,8 @@ void setup() {
 void loop() {
   nii::backend::update();
 
-  for (auto &zone : DB<Zone>::get()) {
+  ZoneMode::update();
 
-    for (int i = zone.from; i < zone.to; i++) {
-      switch (zone.mode) {
-        // case 0:
-        //   res->addData("None");
-        //   break;
-        // case 1:
-        //   res->addData("Use global");
-        //   break;
-        case 2:
-          leds[i] = CRGB::Red;
-          break;
-        // case 3:
-        //   res->addData("DANGER");
-        //   break;
-        case 4:
-          leds[i] = CRGB::Green;
-          break;
-        default:
-          leds[i] = CRGB::White;
-          break;
-      }
-
-    }
-
-  }
-   FastLED.show(); 
   // put your main code here, to run repeatedly:
 
 }
