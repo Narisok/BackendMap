@@ -63,9 +63,11 @@ struct ZoneController {
                   <div class="form-group row ">
                       <span class="form-label col">Mode</span>
                       <select name="mode"  class="form-control form-select col" id="">
-                          <option value="0">Default</option>
-                          <option value="1">Color</option>
-                          <option value="2">Rainbow</option>
+                          <option value="0">None</option>
+                          <option value="1">Use global</option>
+                          <option value="2">Alert</option>
+                          <option value="3">Danger</option>
+                          <option value="4">Calm</option>
                       </select>
                   </div>
                   <div class="form-group">
@@ -149,19 +151,27 @@ struct ZoneController {
                     <select name="mode"  class="form-control form-select col">
           )raw-data");
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 5; i++) {
 
       res->addData(std::string("<option value=\">") + std::to_string(i) + "\"" + (i == zone.mode ? " selected>" : ">"));
 
       switch (i) {
         case 0:
-          res->addData("Default");
+          res->addData("None");
           break;
         case 1:
-          res->addData("Color");
+          res->addData("Use global");
           break;
         case 2:
-          res->addData("Rainbow");
+          res->addData("Alert");
+          break;
+
+        case 3:
+          res->addData("DANGER");
+          break;
+
+        case 4:
+          res->addData("Calm");
           break;
       }
 
