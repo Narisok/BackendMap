@@ -153,7 +153,7 @@ struct ZoneController {
 
     for (int i = 0; i < 5; i++) {
 
-      res->addData(std::string("<option value=\">") + std::to_string(i) + "\"" + (i == zone.mode ? " selected>" : ">"));
+      res->addData(std::string("<option value=\"") + std::to_string(i) + "\"" + (i == zone.mode ? " selected>" : ">"));
 
       switch (i) {
         case 0:
