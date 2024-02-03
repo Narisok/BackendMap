@@ -56,6 +56,7 @@ void setup() {
 
 
     nii::Router::builder()->path("/api/zones/set")->call(&ApiZoneController::set);
+    nii::Router::builder()->path("/api/zones/make")->call(&ApiZoneController::make);
     nii::Router::builder()->path("/api/zones/redirect")->call(&ApiZoneController::redirect);
     nii::Router::builder()->path("/api/zones")->call(&ApiZoneController::zones);
 

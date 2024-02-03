@@ -40,6 +40,24 @@ struct ApiZoneController
         return res;
     }
 
+
+    inline nii::Response *make()
+    {
+        DynamicJsonDocument request(1024);
+        deserializeJson(request, nii::server.arg("plain"));
+
+        std::string key = request["key"].as<std::string>();
+        int mode = request["mode"].as<int>();
+        int from = request["from"].as<int>();
+        int to = request["to"].as<int>();
+
+        Zone zone(key, mode, from, to);
+
+        DB<Zone>::sync(zone);
+
+        return this->zones();
+    }
+
     inline nii::Response *zones()
     {
         auto res = new nii::JsonResponse();
